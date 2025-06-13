@@ -12,7 +12,7 @@ class SignInScreen extends StatelessWidget {
     return Scaffold(
       body: Stack(
         children: [
-          // ✅ Background image with fade
+          // ✅ Background image with dark overlay
           Container(
             decoration: const BoxDecoration(
               image: DecorationImage(
@@ -39,49 +39,29 @@ class SignInScreen extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       const SizedBox(height: 40),
-                      Row(
-                        children: [
-                          Container(
-                            width: 50,
-                            height: 50,
-                            decoration: BoxDecoration(
-                              color: const Color(0xFFAEE0A3),
-                              borderRadius: BorderRadius.circular(25),
-                            ),
-                            child: Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Image.asset(
-                                'assets/images/solar_image.png',
-                              ),
-                            ),
-                          ),
-                          const SizedBox(width: 10),
-                          Container(
-                            width: 15,
-                            height: 50,
-                            decoration: BoxDecoration(
-                              color: Colors.green.withOpacity(0.3),
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 40),
-                      Text(
-                        'Sign In',
-                        style: Theme.of(
-                          context,
-                        ).textTheme.headlineMedium?.copyWith(
-                          color: const Color.fromARGB(
-                              255,
-                              76,
-                              175,
-                              80,
-                            ),
-                          fontWeight: FontWeight.bold,
+
+                      // ✅ Centered logo image
+                      Center(
+                        child: Image.asset(
+                          'assets/images/solar_image.png',
+                          height: 120,
                         ),
                       ),
+
+                      const SizedBox(height: 40),
+
+                      // Title
+                      Text(
+                        'Sign In',
+                        style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                              color: const Color.fromARGB(255, 76, 175, 80),
+                              fontWeight: FontWeight.bold,
+                            ),
+                      ),
+
                       const SizedBox(height: 30),
+
+                      // Username Field
                       TextField(
                         decoration: InputDecoration(
                           hintText: 'Username',
@@ -93,7 +73,10 @@ class SignInScreen extends StatelessWidget {
                           ),
                         ),
                       ),
+
                       const SizedBox(height: 20),
+
+                      // Password Field
                       TextField(
                         obscureText: true,
                         decoration: InputDecoration(
@@ -107,18 +90,16 @@ class SignInScreen extends StatelessWidget {
                           suffixIcon: const Icon(Icons.visibility_off),
                         ),
                       ),
+
                       const SizedBox(height: 40),
+
+                      // Sign In Button
                       SizedBox(
                         width: double.infinity,
                         child: ElevatedButton(
                           onPressed: () => context.go('/home'),
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color.fromARGB(
-                              255,
-                              76,
-                              175,
-                              80,
-                            ),
+                            backgroundColor: const Color.fromARGB(255, 76, 175, 80),
                             padding: const EdgeInsets.symmetric(vertical: 15),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(15),
@@ -134,21 +115,22 @@ class SignInScreen extends StatelessWidget {
                           ),
                         ),
                       ),
+
                       const SizedBox(height: 20),
+
+                      // Or separator
                       Center(
                         child: Text(
                           'Or',
                           style: TextStyle(
-                            color: const Color.fromARGB(
-                              255,
-                              255,
-                              255,
-                              255,
-                            ).withOpacity(0.5),
+                            color: const Color.fromARGB(255, 255, 255, 255).withOpacity(0.5),
                           ),
                         ),
                       ),
+
                       const SizedBox(height: 20),
+
+                      // Google Sign In Button
                       SizedBox(
                         width: double.infinity,
                         child: OutlinedButton.icon(
@@ -170,7 +152,10 @@ class SignInScreen extends StatelessWidget {
                           ),
                         ),
                       ),
+
                       const Spacer(),
+
+                      // Sign Up link
                       Center(
                         child: TextButton(
                           onPressed: () => context.go('/signup'),
