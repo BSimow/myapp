@@ -41,7 +41,7 @@ class HomeScreen extends StatelessWidget {
                         ),
                       ),
                       Text(
-                        'username',
+                        'admin',
                         style: TextStyle(
                           color: Colors.white.withOpacity(0.7),
                           fontSize: screenWidth * 0.035,

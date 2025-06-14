@@ -1,192 +1,157 @@
 import 'package:flutter/material.dart';
-import '../../widgets/bottom_nav_bar.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:myapp/models/isolarapiservice.dart';
+import 'package:myapp/widgets/bottom_nav_bar.dart';
+import 'package:percent_indicator/percent_indicator.dart';
+import 'package:intl/intl.dart';
 
-class EfficiencyScreen extends StatelessWidget {
+class EfficiencyScreen extends StatefulWidget {
   const EfficiencyScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    final screenWidth = MediaQuery.of(context).size.width;
-    final horizontalPadding = screenWidth * 0.05;
+  State<EfficiencyScreen> createState() => _EfficiencyScreenState();
+}
 
+class _EfficiencyScreenState extends State<EfficiencyScreen> {
+  double _efficiency = 0.0;
+  double _totalEnergy = 0.0;
+  bool _loading = true;
+
+  final _api = ISolarApiService(
+    appKey: '1216AD583A0BDE926E0F2BF0DACD4D20',
+    userAccount: 'walaawwafaa@gmail.com',
+    userPassword: 'walaawwafaa@321',
+    accessKey: '6ik9jm7xfice4wd38gzizdp7bcm4b0m7',
+  );
+
+  DateTime _start = DateTime(DateTime.now().year, DateTime.now().month - 1, 1);
+  DateTime _end = DateTime.now();
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchEfficiency();
+  }
+
+  Future<void> _fetchEfficiency() async {
+    try {
+      final data = await _api.fetchData(
+        dataPoint: 'p24',
+        dataType: 'month',
+        start: _start,
+        end: _end,
+      );
+
+      final entries = data['result_data'].values.first['p24'];
+      final total = entries
+          .map((item) => double.tryParse(item['2'].toString()) ?? 0.0)
+          .reduce((a, b) => a + b);
+
+      // Example logic: efficiency is percent of 12,000 kWh capacity
+      final capacity = 12000.0;
+      final percent = (total / capacity).clamp(0.0, 1.0);
+
+      setState(() {
+        _totalEnergy = total;
+        _efficiency = percent;
+        _loading = false;
+      });
+    } catch (e) {
+      print("Error: $e");
+      setState(() => _loading = false);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () => Navigator.pop(context),
-        ),
-        title: const Text('Efficiency Data'),
-      ),
-      body: SingleChildScrollView(
-        padding: EdgeInsets.symmetric(horizontal: horizontalPadding, vertical: 20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Choose a date and time range',
-              style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    color: const Color(0xFF4CAF50),
-                  ),
-            ),
-            const SizedBox(height: 30),
-            const _DateTimeRow(
-              label: 'start date:',
-              date: 'Jun 10, 2024',
-              time: '9:41 AM',
-            ),
-            const SizedBox(height: 20),
-            const _DateTimeRow(
-              label: 'end date:',
-              date: 'Jun 10, 2024',
-              time: '9:41 AM',
-            ),
-            const SizedBox(height: 20),
-            const _DateRow(
-              label: 'day:',
-              date: 'Jun 10, 2024',
-            ),
-            const SizedBox(height: 40),
-            Text(
-              'Pick the data type',
-              style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    color: const Color(0xFF4CAF50),
-                  ),
-            ),
-            const SizedBox(height: 30),
-            _DataTypeButton(title: 'Fetch Yearly Data', onTap: () {}),
-            const SizedBox(height: 15),
-            _DataTypeButton(title: 'Fetch Daily Data', onTap: () {}),
-            const SizedBox(height: 15),
-            _DataTypeButton(title: 'Fetch Minute Data', onTap: () {}),
-            const SizedBox(height: 15),
-            _DataTypeButton(title: 'Fetch Monthly Data', onTap: () {}),
-          ],
-        ),
+      body: SafeArea(
+        child:
+            _loading
+                ? const Center(
+                  child: CircularProgressIndicator(color: Colors.greenAccent),
+                )
+                : Stack(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 20.0,
+                        vertical: 30,
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: const [
+                              Icon(Icons.arrow_back_ios, color: Colors.white),
+                              Icon(Icons.more_vert, color: Colors.white),
+                            ],
+                          ),
+                          const SizedBox(height: 40),
+                          Text(
+                            "System Efficiency",
+                            style: GoogleFonts.orbitron(
+                              textStyle: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 22,
+                                fontWeight: FontWeight.w600,
+                                letterSpacing: 1.2,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 40),
+                          CircularPercentIndicator(
+                            radius: 120.0,
+                            lineWidth: 18.0,
+                            animation: true,
+                            percent: _efficiency,
+                            circularStrokeCap: CircularStrokeCap.round,
+                            backgroundColor: Colors.green.shade800.withOpacity(
+                              0.3,
+                            ),
+                            progressColor: Colors.greenAccent,
+                            center: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text(
+                                  "${(_efficiency * 100).toStringAsFixed(1)}%",
+                                  style: GoogleFonts.orbitron(
+                                    textStyle: const TextStyle(
+                                      fontSize: 32.0,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(height: 8),
+                                const Icon(
+                                  Icons.flash_on,
+                                  color: Colors.white,
+                                  size: 32,
+                                ),
+                              ],
+                            ),
+                          ),
+                          const SizedBox(height: 50),
+                          Text(
+                            "Data Type: Daily\nRange: ${DateFormat('MMM–yyyy').format(_start)} to ${DateFormat('MMM–yyyy').format(_end)}\nTotal Energy Generated: ${_totalEnergy.toStringAsFixed(0)} kWh",
+                            textAlign: TextAlign.center,
+                            style: GoogleFonts.orbitron(
+                              textStyle: const TextStyle(
+                                color: Colors.greenAccent,
+                                fontSize: 14,
+                                height: 1.5,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
       ),
       bottomNavigationBar: const BottomNavBar(currentPath: '/efficiency'),
-    );
-  }
-}
-
-class _DateTimeRow extends StatelessWidget {
-  final String label;
-  final String date;
-  final String time;
-
-  const _DateTimeRow({
-    required this.label,
-    required this.date,
-    required this.time,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Wrap(
-      spacing: 15,
-      runSpacing: 10,
-      crossAxisAlignment: WrapCrossAlignment.center,
-      children: [
-        SizedBox(
-          width: 100,
-          child: Text(
-            label,
-            style: TextStyle(color: Colors.white.withOpacity(0.7)),
-          ),
-        ),
-        Text(
-          date,
-          style: const TextStyle(color: Color(0xFF4CAF50)),
-        ),
-        Text(
-          'start hour:',
-          style: TextStyle(color: Colors.white.withOpacity(0.7)),
-        ),
-        Text(
-          time,
-          style: const TextStyle(color: Color(0xFF4CAF50)),
-        ),
-      ],
-    );
-  }
-}
-
-class _DateRow extends StatelessWidget {
-  final String label;
-  final String date;
-
-  const _DateRow({
-    required this.label,
-    required this.date,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Wrap(
-      spacing: 15,
-      runSpacing: 10,
-      crossAxisAlignment: WrapCrossAlignment.center,
-      children: [
-        SizedBox(
-          width: 100,
-          child: Text(
-            label,
-            style: TextStyle(color: Colors.white.withOpacity(0.7)),
-          ),
-        ),
-        Text(
-          date,
-          style: const TextStyle(color: Color(0xFF4CAF50)),
-        ),
-      ],
-    );
-  }
-}
-
-class _DataTypeButton extends StatefulWidget {
-  final String title;
-  final VoidCallback onTap;
-
-  const _DataTypeButton({
-    required this.title,
-    required this.onTap,
-  });
-
-  @override
-  State<_DataTypeButton> createState() => _DataTypeButtonState();
-}
-
-class _DataTypeButtonState extends State<_DataTypeButton> {
-  bool isHovered = false;
-
-  @override
-  Widget build(BuildContext context) {
-    return MouseRegion(
-      onEnter: (_) => setState(() => isHovered = true),
-      onExit: (_) => setState(() => isHovered = false),
-      child: GestureDetector(
-        onTap: widget.onTap,
-        child: Container(
-          width: double.infinity,
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
-          decoration: BoxDecoration(
-            color: isHovered ? Colors.white.withOpacity(0.1) : Colors.transparent,
-            border: Border.all(color: Colors.white24),
-            borderRadius: BorderRadius.circular(10),
-          ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                widget.title,
-                style: const TextStyle(color: Colors.white, fontSize: 16),
-              ),
-              const Icon(Icons.arrow_forward_ios, color: Colors.white54, size: 16),
-            ],
-          ),
-        ),
-      ),
     );
   }
 }

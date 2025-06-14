@@ -9,6 +9,9 @@ class PhotoScreen extends StatelessWidget {
     final screenHeight = MediaQuery.of(context).size.height;
     final screenWidth = MediaQuery.of(context).size.width;
 
+    final date = 'Jun 14, 2025';
+    final time = '01:35 PM';
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.transparent,
@@ -34,13 +37,13 @@ class PhotoScreen extends StatelessWidget {
                   color: Colors.white.withOpacity(0.1),
                   borderRadius: BorderRadius.circular(20),
                 ),
-                child: Center(
-                  child: Text(
-                    'No Photo Available',
-                    style: TextStyle(
-                      color: Colors.white.withOpacity(0.5),
-                      fontSize: 18,
-                    ),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(20),
+                  child: Image.asset(
+                    'assets/images/recent_photo.jpg',
+                    fit: BoxFit.cover,
+                    width: double.infinity,
+                    height: double.infinity,
                   ),
                 ),
               ),
@@ -58,23 +61,15 @@ class PhotoScreen extends StatelessWidget {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Text(
-                      'Jun 10, 2024',
-                      style: TextStyle(
-                        color: Colors.white.withOpacity(0.7),
-                      ),
+                      date,
+                      style: TextStyle(color: Colors.white.withOpacity(0.7)),
                     ),
                     const SizedBox(width: 10),
-                    Container(
-                      width: 1,
-                      height: 15,
-                      color: Colors.white24,
-                    ),
+                    Container(width: 1, height: 15, color: Colors.white24),
                     const SizedBox(width: 10),
                     Text(
-                      '9:41 AM',
-                      style: TextStyle(
-                        color: Colors.white.withOpacity(0.7),
-                      ),
+                      time,
+                      style: TextStyle(color: Colors.white.withOpacity(0.7)),
                     ),
                   ],
                 ),

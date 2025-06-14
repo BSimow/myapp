@@ -1,5 +1,6 @@
 import 'package:go_router/go_router.dart';
 import 'package:myapp/screens/calender_screen.dart';
+import 'package:myapp/screens/solar_screen.dart';
 import '../screens/welcome_screen.dart';
 import '../screens/signin_screen.dart';
 import '../screens/signup_screen.dart';
@@ -29,7 +30,7 @@ class AppRouter {
       GoRoute(path: '/home', builder: (context, state) => const HomeScreen()),
       GoRoute(
         path: '/solar-data',
-        builder: (context, state) => const SolarDataScreen(),
+        builder: (context, state) => const SolarChartPage(),
       ),
       GoRoute(
         path: '/efficiency',

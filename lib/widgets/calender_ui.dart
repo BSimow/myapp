@@ -166,7 +166,7 @@ class MonthTileWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Text(
       dateTime == null ? '' : dateTime!.day.toString(),
-      style: const TextStyle(fontSize: 8),
+      style: const TextStyle(fontSize: 8, color: Colors.black),
     );
   }
 }
